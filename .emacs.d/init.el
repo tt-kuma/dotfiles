@@ -1,0 +1,1 @@
+/mnt/c/Users/tts/AppData/Roaming/.emacs.d/init.el
