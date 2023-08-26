@@ -1,7 +1,0 @@
-[user]
-	name = tt-kuma
-	email = tts.stt.645@gmail.com
-[ghq]
-	root = /home/tts/repo
-[core]
-	editor = emacs
