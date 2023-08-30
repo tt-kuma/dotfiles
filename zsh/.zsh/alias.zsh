@@ -10,4 +10,4 @@ fi
         abbr "git c"='git commit -m ""'
         abbr k="kubectl"
     fi
-} 2>&1 1> /dev/null
+} 1> /dev/null 2> /dev/null
