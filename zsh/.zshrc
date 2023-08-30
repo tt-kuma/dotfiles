@@ -1,6 +1,4 @@
 typeset -U path PATH
-autoload -Uz compinit
-compinit
 
 if [[ -z $TMUX && $- == *l* ]]; then
   session_count=$(tmux list-sessions 2> /dev/null | wc -l | sed "s/ //g")
@@ -20,3 +18,6 @@ source "$HOME/.zsh/plugins.zsh"
 for f in $(find "$HOME/.zsh/" -maxdepth 1 -type f ! -name "plugins.zsh"); do
   source "$f"
 done
+
+autoload -Uz compinit
+compinit
