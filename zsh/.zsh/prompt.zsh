@@ -6,7 +6,7 @@ zstyle ':vcs_info:git:*' formats "(%b)%c%u"
 zstyle ':vcs_info:git:*' actionformats "(%b|%a)%c%u"
 zstyle ':vcs_info:git:*' unstagedstr "-"
 zstyle ':vcs_info:git:*' stagedstr "+"
-precmd_vcs_info() { vcs_info }
+precmd_vcs_info() { vcs_info; }
 precmd_functions+=(precmd_vcs_info)
 
 # kube-ps1

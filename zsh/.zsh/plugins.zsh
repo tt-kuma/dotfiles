@@ -9,6 +9,6 @@ export PATH="$ZSH_PLUGINS_DIR/forgit/bin:$PATH"
 source "$ZSH_PLUGINS_DIR/zsh-abbr/zsh-abbr.plugin.zsh"
 source "$ZSH_PLUGINS_DIR/kube-ps1/kube-ps1.sh"
 
-[[ -f $HOME/.fzf.zsh ]] && source $HOME/.fzf.zsh
+[[ -f $HOME/.fzf.zsh ]] && source "$HOME/.fzf.zsh"
 [[ -f /usr/share/doc/fzf/examples/key-bindings.zsh ]] && source /usr/share/doc/fzf/examples/key-bindings.zsh
 [[ -f /usr/share/doc/fzf/examples/completion.zsh ]] && source /usr/share/doc/fzf/examples/completion.zsh
