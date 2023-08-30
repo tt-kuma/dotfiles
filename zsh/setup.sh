@@ -83,9 +83,9 @@ pushd "$(dirname "$0")" > /dev/null
 src_dir=$(pwd) > /dev/null
 popd
 dotfiles=$(find "$src_dir" -maxdepth 1 -name ".*")
-for f in $dotfiles; do
-    dst="$HOME/$(basename "$f")"
-    if [[ $(readlink "$dst") == "$f" ]]; then
+for src in $dotfiles; do
+    dst="$HOME/$(basename "$src")"
+    if [[ $(readlink "$dst") == "$src" ]]; then
         log "Already up to date: $dst"
         continue
     fi
@@ -95,6 +95,6 @@ for f in $dotfiles; do
         mv "$dst" "$dst.$(date '+%Y%m%d').bak"
         backup_message="$dst.$(date '+%Y%m%d').bak"
     fi
-    ln -s "$f" "$dst"
+    ln -s "$src" "$dst"
     log "Updated $dst (backup: $backup_message)."
 done
