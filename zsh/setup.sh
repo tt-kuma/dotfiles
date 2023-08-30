@@ -79,17 +79,22 @@ log "===== Setup ghq ====="
 git config --global ghq.root "$HOME/repos"
 
 log "===== Create symbolic links of dotfiles ====="
-pushd "$(dirname "$0")"
-src_dir=$(pwd)
+pushd "$(dirname "$0")" > /dev/null
+src_dir=$(pwd) > /dev/null
 popd
-dotfiles=$(ls -Ad "$src_dir"/.[^.]*)
+dotfiles=$(find "$src_dir" -maxdepth 1 -name ".*")
 for f in $dotfiles; do
     dst="$HOME/$(basename "$f")"
     if [[ $(readlink "$dst") == "$f" ]]; then
         log "Already up to date: $dst"
         continue
     fi
-    mv "$dst" "$dst.$(date '+%Y%m%d').bak"
+
+    backup_message="no original file"
+    if [[ -e $dst ]]; then
+        mv "$dst" "$dst.$(date '+%Y%m%d').bak"
+        backup_message="$dst.$(date '+%Y%m%d').bak"
+    fi
     ln -s "$f" "$dst"
-    log "Updated $dst (backup: $dst.$(date '+%Y%m%d').bak)."
+    log "Updated $dst (backup: $backup_message)."
 done
