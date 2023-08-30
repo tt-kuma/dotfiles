@@ -51,7 +51,7 @@ case "$OS" in
     sudo mv ./kubectl /usr/local/bin/kubectl
     ;;
 "Darwin")
-    if type brew > /dev/null; then
+    if type ! brew > /dev/null; then
         log "===== Installing brew ====="
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     fi
