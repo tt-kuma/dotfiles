@@ -17,6 +17,6 @@ if [[ -z $TMUX && $- == *l* ]]; then
 fi
 
 source "$HOME/.zsh/plugins.zsh"
-for f in find $HOME/.zsh/*.zsh -type f ! -name "*plugins.zsh"; do
+for f in $(find "$HOME/.zsh/" -maxdepth 1 -type f ! -name "plugins.zsh"); do
   source "$f"
 done
