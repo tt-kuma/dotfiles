@@ -21,7 +21,6 @@ base_packages=(
     "jq"
     "colordiff"
     "tree"
-    "emacs"
 )
 log "===== Installing packages ====="
 case "$OS" in
@@ -30,6 +29,7 @@ case "$OS" in
         "${base_packages[@]}"
         golang
         xsel
+        emacs-nox
     )
     if type apt > /dev/null; then
         sudo apt update
@@ -61,6 +61,7 @@ case "$OS" in
         go
         ghq
         kubectl
+        emacs
     )
     brew update
     brew install "${packages[@]}"
