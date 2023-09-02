@@ -1,6 +1,6 @@
 # ghq + fzf
 fghq() {
-    local repo=$(ghq list | fzf --reverse --preview "if [[ -n $(ghq root)/{}/README.md ]]; then cat $(ghq root)/{}/README.md; else tree -C {}; fi")
+    local repo=$(ghq list | fzf-tmux --reverse --preview "if [[ -n $(ghq root)/{}/README.md ]]; then cat $(ghq root)/{}/README.md; else tree -C {}; fi")
     if [[ -n "$repo" ]]; then
         cd "$(ghq root)/$repo"
     fi
