@@ -1,6 +1,6 @@
 export HISTFILE="$HOME/.zsh_history"
 export HISTSIZE=3000
-export HISTFILESIZE=10000
+export SAVEHIST=10000
 
 setopt SHARE_HISTORY
 setopt HIST_IGNORE_DUPS
