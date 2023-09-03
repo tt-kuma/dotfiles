@@ -2,8 +2,6 @@
 
 set -eu -o pipefail
 
-OS=$(uname -s)
-
 log() {
     echo "$(date '+%Y%m%dT%H:%M:%S') $*"
 }
@@ -11,32 +9,58 @@ log() {
 log_err() {
     echo "$(date '+%Y%m%dT%H:%M:%S') $*" 1>&2
 }
-log "Detected os is $OS."
 
+OS=$(uname -s)
+declare ARCH
+case $(uname -m) in
+"x86_64" | "x64" | "amd64")
+    ARCH="amd64"
+    ;;
+"arm64" | "aarch64")
+    ARCH="arm64"
+    ;;
+*)
+    log_err "Unsupported cpu architecture."
+    exit 1
+    ;;
+esac
+
+log "Detected os is $OS ($ARCH)."
 # install packages
-base_packages=(
-    "zsh"
-    "fzf"
-    "tmux"
-    "jq"
+packages=(
     "colordiff"
+    "docker"
+    "fzf"
+    "git"
+    "jq"
+    "tmux"
     "tree"
+    "zsh"
 )
 log "===== Installing packages ====="
 case "$OS" in
 "Linux")
-    packages=(
-        "${base_packages[@]}"
+    packages+=(
+        emacs-nox
         golang
         xsel
-        emacs-nox
     )
     if type apt > /dev/null; then
         sudo apt update
         sudo apt install -y "${packages[@]}"
-    elif type dnf > /dev/null; then
-        sudo dnf check-update
-        c sudo dnf install -y "${packages[@]}"
+    # Currently, support only apt
+    # elif type dnf > /dev/null; then
+    #     package+=(
+    #         epel-release
+    #     )
+    #     sudo dnf check-update || :
+    #     sudo dnf install -y "${packages[@]}"
+    # elif type yum > /dev/null; then
+    #     package+=(
+    #         epel-release
+    #     )
+    #     sudo yum check-update || :
+    #     sudo yum install -y "${packages[@]}"
     else
         log_err "Unsupported linux distribution."
         exit 1
@@ -46,7 +70,7 @@ case "$OS" in
     export PATH="$GOPATH/bin:$PATH"
     go install github.com/x-motemen/ghq@latest
 
-    curl -fsSLO "https://dl.k8s.io/release/$(curl -fsSL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    curl -fsSLO "https://dl.k8s.io/release/$(curl -fsSL https://dl.k8s.io/release/stable.txt)/bin/linux/$ARCH/kubectl"
     chmod +x ./kubectl
     sudo mv ./kubectl /usr/local/bin/kubectl
     ;;
@@ -56,12 +80,11 @@ case "$OS" in
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     fi
 
-    packages=(
-        "${base_packages[@]}"
-        go
-        ghq
-        kubectl
+    packages+=(
         emacs
+        ghq
+        go
+        kubectl
     )
     brew update
     brew install "${packages[@]}"
@@ -81,8 +104,8 @@ git config --global ghq.root "$HOME/repos"
 
 log "===== Create symbolic links of dotfiles ====="
 pushd "$(dirname "$0")" > /dev/null
-src_dir=$(pwd) > /dev/null
-popd
+src_dir=$(pwd)
+popd > /dev/null
 dotfiles=$(find "$src_dir" -maxdepth 1 -name ".*")
 for src in $dotfiles; do
     dst="$HOME/$(basename "$src")"
@@ -99,3 +122,5 @@ for src in $dotfiles; do
     ln -s "$src" "$dst"
     log "Updated $dst (backup: $backup_message)."
 done
+
+log "Setup has successfully finished."
