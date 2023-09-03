@@ -2,28 +2,14 @@
 
 set -eu -o pipefail
 
-log() {
-    echo "$(date '+%Y%m%dT%H:%M:%S') $*"
-}
-
-log_err() {
-    echo "$(date '+%Y%m%dT%H:%M:%S') $*" 1>&2
-}
+source "$(dirname "$0")/../util.sh"
 
 OS=$(uname -s)
-declare ARCH
-case $(uname -m) in
-"x86_64" | "x64" | "amd64")
-    ARCH="amd64"
-    ;;
-"arm64" | "aarch64")
-    ARCH="arm64"
-    ;;
-*)
+ARCH=$(cpu_arch)
+if [[ -z $ARCH ]]; then
     log_err "Unsupported cpu architecture."
     exit 1
-    ;;
-esac
+fi
 
 log "Detected os is $OS ($ARCH)."
 # install packages
@@ -37,6 +23,7 @@ packages=(
     "tree"
     "zsh"
 )
+
 log "===== Installing packages ====="
 case "$OS" in
 "Linux")
@@ -97,30 +84,23 @@ case "$OS" in
 esac
 
 log "===== Set zsh as a default shell ====="
-chsh -s /bin/zsh
+if [[ $SHELL != */zsh ]]; then
+    chsh -s /bin/zsh
+fi
 
 log "===== Setup ghq ====="
-git config --global ghq.root "$HOME/repos"
+GHQ_ROOT=$HOME/repos
+if [[ $GHQ_ROOT != $(ghq root) ]]; then
+    log "Set $GHQ_ROOT as ghq root."
+    git config --global ghq.root "$GHQ_ROOT"
+fi
 
 log "===== Create symbolic links of dotfiles ====="
-pushd "$(dirname "$0")" > /dev/null
-src_dir=$(pwd)
-popd > /dev/null
+src_dir=$(full_dirname "$0")
 dotfiles=$(find "$src_dir" -maxdepth 1 -name ".*")
 for src in $dotfiles; do
     dst="$HOME/$(basename "$src")"
-    if [[ $(readlink "$dst") == "$src" ]]; then
-        log "Already up to date: $dst"
-        continue
-    fi
-
-    backup_message="no original file"
-    if [[ -e $dst ]]; then
-        mv "$dst" "$dst.$(date '+%Y%m%d').bak"
-        backup_message="$dst.$(date '+%Y%m%d').bak"
-    fi
-    ln -s "$src" "$dst"
-    log "Updated $dst (backup: $backup_message)."
+    create_symbolic_link_and_backup "$src" "$dst"
 done
 
 log "Setup has successfully finished."
