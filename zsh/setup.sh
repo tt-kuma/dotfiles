@@ -2,41 +2,52 @@
 
 set -eu -o pipefail
 
+source "$(dirname "$0")/../util.sh"
+
 OS=$(uname -s)
+ARCH=$(cpu_arch)
+if [[ -z $ARCH ]]; then
+    log_err "Unsupported cpu architecture."
+    exit 1
+fi
 
-log() {
-    echo "$(date '+%Y%m%dT%H:%M:%S') $*"
-}
-
-log_err() {
-    echo "$(date '+%Y%m%dT%H:%M:%S') $*" 1>&2
-}
-log "Detected os is $OS."
-
+log "Detected os is $OS ($ARCH)."
 # install packages
-base_packages=(
-    "zsh"
-    "fzf"
-    "tmux"
-    "jq"
+packages=(
     "colordiff"
+    "docker"
+    "fzf"
+    "git"
+    "jq"
+    "tmux"
     "tree"
-    "emacs"
+    "zsh"
 )
+
 log "===== Installing packages ====="
 case "$OS" in
 "Linux")
-    packages=(
-        "${base_packages[@]}"
+    packages+=(
+        emacs-nox
         golang
         xsel
     )
     if type apt > /dev/null; then
         sudo apt update
         sudo apt install -y "${packages[@]}"
-    elif type dnf > /dev/null; then
-        sudo dnf check-update
-        c sudo dnf install -y "${packages[@]}"
+    # Currently, support only apt
+    # elif type dnf > /dev/null; then
+    #     package+=(
+    #         epel-release
+    #     )
+    #     sudo dnf check-update || :
+    #     sudo dnf install -y "${packages[@]}"
+    # elif type yum > /dev/null; then
+    #     package+=(
+    #         epel-release
+    #     )
+    #     sudo yum check-update || :
+    #     sudo yum install -y "${packages[@]}"
     else
         log_err "Unsupported linux distribution."
         exit 1
@@ -46,20 +57,20 @@ case "$OS" in
     export PATH="$GOPATH/bin:$PATH"
     go install github.com/x-motemen/ghq@latest
 
-    curl -fsSLO "https://dl.k8s.io/release/$(curl -fsSL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    curl -fsSLO "https://dl.k8s.io/release/$(curl -fsSL https://dl.k8s.io/release/stable.txt)/bin/linux/$ARCH/kubectl"
     chmod +x ./kubectl
     sudo mv ./kubectl /usr/local/bin/kubectl
     ;;
 "Darwin")
-    if type ! brew > /dev/null; then
+    if ! type brew > /dev/null; then
         log "===== Installing brew ====="
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     fi
 
-    packages=(
-        "${base_packages[@]}"
-        go
+    packages+=(
+        emacs
         ghq
+        go
         kubectl
     )
     brew update
@@ -73,23 +84,23 @@ case "$OS" in
 esac
 
 log "===== Set zsh as a default shell ====="
-chsh -s /bin/zsh
+if [[ $SHELL != */zsh ]]; then
+    chsh -s /bin/zsh
+fi
 
 log "===== Setup ghq ====="
-git config --global ghq.root "$HOME/repos"
+GHQ_ROOT=$HOME/repos
+if [[ $GHQ_ROOT != $(ghq root) ]]; then
+    log "Set $GHQ_ROOT as ghq root."
+    git config --global ghq.root "$GHQ_ROOT"
+fi
 
 log "===== Create symbolic links of dotfiles ====="
-pushd "$(dirname "$0")"
-src_dir=$(pwd)
-popd
-dotfiles=$(ls -Ad "$src_dir"/.[^.]*)
-for f in $dotfiles; do
-    dst="$HOME/$(basename "$f")"
-    if [[ $(readlink "$dst") == "$f" ]]; then
-        log "Already up to date: $dst"
-        continue
-    fi
-    mv "$dst" "$dst.$(date '+%Y%m%d').bak"
-    ln -s "$f" "$dst"
-    log "Updated $dst (backup: $dst.$(date '+%Y%m%d').bak)."
+src_dir=$(full_dirname "$0")
+dotfiles=$(find "$src_dir" -maxdepth 1 -name ".*")
+for src in $dotfiles; do
+    dst="$HOME/$(basename "$src")"
+    create_symbolic_link_and_backup "$src" "$dst"
 done
+
+log "Setup has successfully finished."

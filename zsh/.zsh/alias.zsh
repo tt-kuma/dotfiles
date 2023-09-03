@@ -9,5 +9,6 @@ fi
     if type abbr; then
         abbr "git c"='git commit -m ""'
         abbr k="kubectl"
+        abbr now="date '+%Y%m%d'"
     fi
 } 1> /dev/null 2> /dev/null

@@ -1,6 +1,7 @@
+setopt PROMPT_SUBST
+
 # git
 autoload -Uz vcs_info
-setopt PROMPT_SUBST
 zstyle ':vcs_info:git:*' check-for-changes true
 zstyle ':vcs_info:git:*' formats "(%b)%c%u"
 zstyle ':vcs_info:git:*' actionformats "(%b|%a)%c%u"
