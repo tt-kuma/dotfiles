@@ -8,7 +8,7 @@ fghq() {
 
 gover() {
     local go_version=$(ls "$HOME/sdk" | grep go | fzf --reverse)
-    if [[ -n $GOPATH ]] && [[ -n $_go_version ]] && [[ -L $GOPATH/bin/go ]]; then
+    if [[ -n $go_version ]]; then
         ln -nfs "$GOPATH/bin/$go_version" "$GOPATH/bin/go"
     fi
 }
