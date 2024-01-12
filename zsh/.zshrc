@@ -1,5 +1,7 @@
 typeset -U path PATH
 
+export PATH="/opt/homebrew/bin:$PATH"
+
 if [[ -z $TMUX && $- == *l* ]]; then
   session_count=$(tmux list-sessions 2> /dev/null | wc -l | sed "s/ //g")
   case "$session_count" in
