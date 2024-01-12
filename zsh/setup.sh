@@ -62,6 +62,10 @@ case "$OS" in
     sudo mv ./kubectl /usr/local/bin/kubectl
     ;;
 "Darwin")
+    if [[ $ARCH = "arm64" ]]; then
+        export PATH="/opt/homebrew/bin:$PATH"
+    fi
+
     if ! type brew > /dev/null; then
         log "===== Installing brew ====="
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
