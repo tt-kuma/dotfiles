@@ -1,0 +1,18 @@
+[submodule "zsh/.zsh/plugins/zsh-completions"]
+	path = zsh/.zsh/plugins/zsh-completions
+	url = https://github.com/zsh-users/zsh-completions.git
+[submodule "zsh/.zsh/plugins/fzf-tab"]
+	path = zsh/.zsh/plugins/fzf-tab
+	url = https://github.com/Aloxaf/fzf-tab.git
+[submodule "zsh/.zsh/plugins/fzf-zsh-completions"]
+	path = zsh/.zsh/plugins/fzf-zsh-completions
+	url = https://github.com/chitoku-k/fzf-zsh-completions.git
+[submodule "zsh/.zsh/plugins/forgit"]
+	path = zsh/.zsh/plugins/forgit
+	url = https://github.com/wfxr/forgit.git
+[submodule "zsh/.zsh/plugins/kube-ps1"]
+	path = zsh/.zsh/plugins/kube-ps1
+	url = https://github.com/jonmosco/kube-ps1.git
+[submodule "zsh/.zsh/plugins/ohmyzsh"]
+	path = zsh/.zsh/plugins/ohmyzsh
+	url = https://github.com/ohmyzsh/ohmyzsh.git
