@@ -16,3 +16,4 @@ export LESS="-R"
 # path
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 export PATH="$GOPATH/bin:$PATH"
+export PATH="/opt/homebrew/bin:$PATH"
